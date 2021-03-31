@@ -121,5 +121,14 @@ namespace XpandTest6.Controllers
             else
                 return View("Error");
         }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> LogOff()
+        {
+            
+            await _signInManager.SignOutAsync();
+            return RedirectToAction("Register", "Accounts");
+        }
     }
 }
