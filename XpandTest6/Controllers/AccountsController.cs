@@ -38,10 +38,9 @@ namespace XpandTest6.Controllers
                 var user = await _userManager.FindByNameAsync(model.Email);
                 if (user != null)
                 {
-                    // проверяем, подтвержден ли email
                     if (!await _userManager.IsEmailConfirmedAsync(user))
                     {
-                        ModelState.AddModelError(string.Empty, "Вы не подтвердили свой email");
+                        ModelState.AddModelError(string.Empty, "You have not confirmed your email");
                         return View(model);
                     }
                 }
@@ -54,7 +53,7 @@ namespace XpandTest6.Controllers
                 }
                 else
                 {
-                    ModelState.AddModelError("", "Неправильный логин и (или) пароль");
+                    ModelState.AddModelError("", "Incorrect username and (or) password");
                 }
             }
             return View(model);
@@ -129,6 +128,39 @@ namespace XpandTest6.Controllers
             
             await _signInManager.SignOutAsync();
             return RedirectToAction("Login", "Accounts");
+        }
+
+        [HttpGet]
+        [AllowAnonymous]
+        public IActionResult ForgotPassword()
+        {
+            return View();
+        }
+        [HttpPost]
+        [AllowAnonymous]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> ForgotPassword(ForgotPasswordViewModel model)
+        {
+            if (ModelState.IsValid)
+            {
+                var user = await _userManager.FindByEmailAsync(model.Email);
+                if (user == null || !(await _userManager.IsEmailConfirmedAsync(user)))
+                {
+                    return View("ForgotPasswordConfirmation");
+                }
+
+                var code = await _userManager.GeneratePasswordResetTokenAsync(user);
+                var callbackUrl = Url.Action("ResetPassword", "Accounts", new { userId = user.Id, code = code }, protocol: HttpContext.Request.Scheme);
+
+                //EmailService emailService = new EmailService();
+                //await emailService.SendEmailAsync(model.Email, "Reset Password",
+                //    $"To reset your password follow the link: <a href='{callbackUrl}'>link</a>");
+
+                ViewData["Link"] = callbackUrl;
+
+                return View("ForgotPasswordConfirmation");
+            }
+            return View(model);
         }
     }
 }
