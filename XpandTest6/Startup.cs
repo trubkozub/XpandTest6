@@ -35,19 +35,7 @@ namespace XpandTest6
                 .AddDefaultTokenProviders();
             services.AddControllersWithViews();
 
-            services.AddAuthentication(options =>
-            {
-                options.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;
-            })
-        .AddCookie(options =>
-        {
-            options.LoginPath = "/account/facebook-login";
-        });
-
-
-            //services.AddIdentity<User, IdentityRole>()
-            //    .AddEntityFrameworkStores<ApplicationContext>();
-
+         
             services.AddControllersWithViews();
         }
 
