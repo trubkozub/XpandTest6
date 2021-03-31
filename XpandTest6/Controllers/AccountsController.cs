@@ -128,7 +128,7 @@ namespace XpandTest6.Controllers
         {
             
             await _signInManager.SignOutAsync();
-            return RedirectToAction("Register", "Accounts");
+            return RedirectToAction("Login", "Accounts");
         }
     }
 }
