@@ -1,6 +1,6 @@
 ﻿@model XpandTest6.ViewModels.LoginViewModel
 
-<h2>Вход в приложение</h2>
+<h2>Sign In</h2>
 <form method="post" asp-controller="Accounts" asp-action="Login"
       asp-route-returnUrl="@Model.ReturnUrl">
     <div asp-validation-summary="ModelOnly"></div>
@@ -18,3 +18,11 @@
         <input type="submit" class="btn continue btn-block" value="Войти" />
     </div>
 </form>
+
+<br />
+<a href="#" class="btn facebook btn-block" role="button">Sign In With Facebook</a>
+<br />
+<a href="#" class="btn twitter btn-block" role="button">Sign In With Twitter</a>
+
+<br />
+<a asp-controller="Accounts" asp-action="Register">Sign Up</a>
