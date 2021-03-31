@@ -22,11 +22,7 @@ namespace XpandTest6.Controllers
             _signInManager = signInManager;
         }
         [HttpGet]
-        public IActionResult Register()
-        {
-            return View();
-        }
-
+      
         [HttpGet]
         public IActionResult Login(string returnUrl = null)
         {
@@ -80,17 +76,20 @@ namespace XpandTest6.Controllers
                 if (result.Succeeded)
                 {
 
-                    //var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
-                    //var callbackUrl = Url.Action(
-                    //    "ConfirmEmail",
-                    //    "Account",
-                    //    new { userId = user.Id, code = code },
-                    //    protocol: HttpContext.Request.Scheme);
+                    var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
+                    var callbackUrl = Url.Action(
+                        "ConfirmEmail",
+                        "Accounts",
+                        new { userId = user.Id, code = code },
+                        protocol: HttpContext.Request.Scheme);
                     //EmailService emailService = new EmailService();
                     //await emailService.SendEmailAsync(model.Email, "Confirm your account",
                     //    $"Confirm registration by clicking on the link : <a href='{callbackUrl}'>link</a>");
 
-                    return Content("Для завершения регистрации проверьте электронную почту и перейдите по ссылке, указанной в письме");
+
+                    ViewData["Link"] = callbackUrl;
+
+                    return View("EmailConfirm");
                 }
                 else
                 {
@@ -101,6 +100,26 @@ namespace XpandTest6.Controllers
                 }
             }
             return View(model);
+        }
+
+        [HttpGet]
+        [AllowAnonymous]
+        public async Task<IActionResult> ConfirmEmail(string userId, string code)
+        {
+            if (userId == null || code == null)
+            {
+                return View("Error");
+            }
+            var user = await _userManager.FindByIdAsync(userId);
+            if (user == null)
+            {
+                return View("Error");
+            }
+            var result = await _userManager.ConfirmEmailAsync(user, code);
+            if (result.Succeeded)
+                return RedirectToAction("Login", "Accounts");
+            else
+                return View("Error");
         }
     }
 }
