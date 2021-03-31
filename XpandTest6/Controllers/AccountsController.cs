@@ -63,5 +63,44 @@ namespace XpandTest6.Controllers
             }
             return View(model);
         }
+
+        [HttpGet]
+        public IActionResult Register()
+        {
+            return View();
+        }
+        [HttpPost]
+        public async Task<IActionResult> Register(RegisterViewModel model)
+        {
+            if (ModelState.IsValid)
+            {
+                User user = new User { Email = model.Email, UserName = model.Email };
+
+                var result = await _userManager.CreateAsync(user, model.Password);
+                if (result.Succeeded)
+                {
+
+                    //var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
+                    //var callbackUrl = Url.Action(
+                    //    "ConfirmEmail",
+                    //    "Account",
+                    //    new { userId = user.Id, code = code },
+                    //    protocol: HttpContext.Request.Scheme);
+                    //EmailService emailService = new EmailService();
+                    //await emailService.SendEmailAsync(model.Email, "Confirm your account",
+                    //    $"Confirm registration by clicking on the link : <a href='{callbackUrl}'>link</a>");
+
+                    return Content("Для завершения регистрации проверьте электронную почту и перейдите по ссылке, указанной в письме");
+                }
+                else
+                {
+                    foreach (var error in result.Errors)
+                    {
+                        ModelState.AddModelError(string.Empty, error.Description);
+                    }
+                }
+            }
+            return View(model);
+        }
     }
 }
